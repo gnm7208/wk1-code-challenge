@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- Student Grade Generator Application: A web app to generate student grades based on marks entered (0-100). -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grade Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #a1c7d8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: rgb(228, 10, 210);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #0c8cf5;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #3a6fe2;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Grade Generator</h1>
+        <label for="marksInput">Enter student marks (0-100):</label>
+        <input type="number" id="marksInput" min="0" max="100" placeholder="e.g., 85">
+        <button onclick="generateGrade()">Generate Grade</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Function to generate a grade based on student marks
+        function generateGrade() {
+            // Get the marks input value and parse it as an integer
+            const marks = parseInt(document.getElementById('marksInput').value);
+            const resultDiv = document.getElementById('result');
+
+            // Validate the input marks (must be between 0 and 100)
+            if (isNaN(marks) || marks < 0 || marks > 100) {
+                resultDiv.textContent = 'Invalid input. Please enter a number between 0 and 100.';
+                return;
+            }
+
+            // Determine the grade based on marks ranges
+            let grade;
+            if (marks > 79) {
+                grade = 'A';
+            } else if (marks >= 60) {
+                grade = 'B';
+            } else if (marks >= 49) {
+                grade = 'C';
+            } else if (marks >= 40) {
+                grade = 'D';
+            } else {
+                grade = 'E';
+            }
+            resultDiv.textContent = `Grade: ${grade}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!-- Speed Detector Application: A simple web app to check car speed and determine demerit points or license suspension based on Kenyan traffic rules. -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #beebb3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #e210d8;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #ee1de3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            padding: 15px;
+            border: 1px solid #f50c0c;
+            border-radius: 4px;
+            background-color: #eef112;
+            width: 200px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+        .red-text {
+            color: red !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Speed Detector</h1>
+    <label for="speedInput">Enter car speed (km/h):</label>
+    <input type="number" id="speedInput" min="0" placeholder="e.g., 80">
+    <button onclick="checkSpeed()">Check Speed</button>
+    <div id="result"></div>
+
+    <script>
+        // Function to check the speed entered by the user and calculate demerit points or license suspension
+        function checkSpeed() {
+            // Get the speed input value and parse it as an integer
+            const speed = parseInt(document.getElementById('speedInput').value);
+            const resultDiv = document.getElementById('result');
+
+            // Validate the input speed
+            if (isNaN(speed) || speed < 0) {
+                resultDiv.textContent = 'Invalid input. Please enter a valid speed.';
+                resultDiv.classList.remove('red-text');
+                return;
+            }
+
+            // If speed is less than 70 km/h, no demerit points
+            if (speed < 70) {
+                resultDiv.textContent = 'Ok';
+                resultDiv.classList.remove('red-text');
+            } else {
+                // Calculate demerit points: 1 point for every 5 km/h above 70
+                const points = Math.floor((speed - 70) / 5);
+                // If points exceed 12, license is suspended
+                if (points > 12) {
+                    resultDiv.textContent = 'License suspended';
+                    resultDiv.classList.add('red-text');
+                } else {
+                    resultDiv.textContent = `${points} points`;
+                    resultDiv.classList.remove('red-text');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

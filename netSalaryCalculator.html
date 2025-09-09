@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<!-- Net Salary Calculator Application: A web app to calculate net salary in Kenya based on basic salary, benefits, and deductions (PAYE, NHIF, NSSF). -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Net Salary Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #d6b72e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            padding: 8px;
+            width: 250px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 25px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+            color: #333;
+        }
+        #result p {
+            margin: 8px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Net Salary Calculator</h1>
+    <label for="basicSalary">Basic Salary (KES):</label>
+    <input type="number" id="basicSalary" min="0" placeholder="Enter basic salary" />
+    <label for="benefits">Benefits (KES):</label>
+    <input type="number" id="benefits" min="0" placeholder="Enter benefits" />
+    <button onclick="calculateNetSalary()">Calculate Net Salary</button>
+    <div id="result"></div>
+
+    <script>
+        // PAYE tax bands and rates as per 1 July 2023
+        // These bands define the income limits and corresponding tax rates for PAYE calculation
+        const taxBands = [
+            { limit: 24000, rate: 0.10 },
+            { limit: 32333, rate: 0.25 },
+            { limit: 500000, rate: 0.30 },
+            { limit: 800000, rate: 0.325 },
+            { limit: Infinity, rate: 0.35 }
+        ];
+
+        // NSSF deduction (using new rates: 6% employee contribution capped at 1080 KES)
+        const nssfRate = 0.06;
+        const nssfMax = 1080;
+
+        function calculatePayee(taxableIncome) {
+            let remaining = taxableIncome;
+            let payee = 0;
+            let lowerLimit = 0;
+
+            for (let i = 0; i < taxBands.length; i++) {
+                let bandLimit = taxBands[i].limit;
+                let bandRate = taxBands[i].rate;
+                let taxableAtBand = Math.min(remaining, bandLimit - lowerLimit);
+                if (taxableAtBand <= 0) break;
+                payee += taxableAtBand * bandRate;
+                remaining -= taxableAtBand;
+                lowerLimit = bandLimit;
+            }
+            return payee;
+        }
+
+        // Calculate SHIF deduction as 2.75% of gross monthly income regardless of income level
+        function calculateShif(grossSalary) {
+            return grossSalary * 0.0275;
+        }
+
+        // Calculate NSSF deduction using new rates: 6% employee contribution capped at 1080 KES
+        function calculateNssf(grossSalary) {
+            let contribution = grossSalary * nssfRate;
+            return contribution > nssfMax ? nssfMax : contribution;
+        }
+
+        // Calculate net salary after deductions: PAYE, SHIF, and NSSF
+        function calculateNetSalary() {
+            const basicSalary = parseFloat(document.getElementById('basicSalary').value) || 0;
+            const benefits = parseFloat(document.getElementById('benefits').value) || 0;
+
+            if (basicSalary <= 0) {
+                alert('Please enter a valid basic salary.');
+                return;
+            }
+
+            const grossSalary = basicSalary + benefits;
+
+            // Calculate PAYE taxable income (gross salary - personal relief)
+            const personalRelief = 2400; // Monthly personal relief as per link 
+            let taxableIncome = grossSalary - personalRelief;
+            if (taxableIncome < 0) taxableIncome = 0;
+
+            const payee = calculatePayee(taxableIncome);
+            const shif = calculateShif(grossSalary);
+            const nssf = calculateNssf(grossSalary);
+
+            const netSalary = grossSalary - (payee + shif + nssf);
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p>Gross Salary: KES ${grossSalary.toFixed(2)}</p>
+                <p>PAYE (Tax): KES ${payee.toFixed(2)}</p>
+                <p>SHIF Deduction: KES ${shif.toFixed(2)}</p>
+                <p>NSSF Deduction: KES ${nssf.toFixed(2)}</p>
+                <p><strong>Net Salary: KES ${netSalary.toFixed(2)}</strong></p>
+            `;
+        }
+    </script>
+</body>
+</html>
